@@ -2,21 +2,23 @@
 
 为 [pi coding agent](https://github.com/earendil-works/pi)（`@earendil-works/pi-coding-agent`）编写的个人扩展与主题合集。
 
-包含 **2 个扩展** 和 **1 个主题**：
+包含 **3 个扩展**（2 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
 
 | 文件 | 类型 | 简介 |
 |---|---|---|
-| [`extensions/compact-tool-status.ts`](extensions/compact-tool-status.ts) | 扩展 | 内置工具单行紧凑渲染 + 思考块自动折叠 + 用户消息加粗 |
-| [`extensions/model-in-system-prompt.ts`](extensions/model-in-system-prompt.ts) | 扩展 | 在系统提示词末尾注入当前模型信息 |
-| [`themes/kimi style.json`](themes/kimi%20style.json) | 主题 | Kimi 风格深色主题（暖黄用户消息、蓝色强调） |
+| [`extensions/compact-tool-status.ts`](extensions/compact-tool-status.ts) | 扩展（原创） | 内置工具单行紧凑渲染 + 思考块自动折叠 + 用户消息加粗 |
+| [`extensions/model-in-system-prompt.ts`](extensions/model-in-system-prompt.ts) | 扩展（原创） | 在系统提示词末尾注入当前模型信息 |
+| [`extensions/timing/`](extensions/timing/README.md) | 扩展（第三方修改版） | 基于 [pi-timing](https://github.com/adamcjm/pi-timing) v1.3.0（MIT）本地修改：隐藏会话跨度显示 |
+| [`themes/kimi style.json`](themes/kimi%20style.json) | 主题（原创） | Kimi 风格深色主题（暖黄用户消息、蓝色强调） |
 
 ## 安装
 
 把文件复制到 pi 的全局目录（或项目级 `.pi/` 目录）：
 
 ```bash
-# 扩展
+# 扩展（原创两个单文件 + timing 目录）
 cp extensions/*.ts ~/.pi/agent/extensions/
+cp -r extensions/timing ~/.pi/agent/extensions/
 
 # 主题
 cp "themes/kimi style.json" ~/.pi/agent/themes/
@@ -59,6 +61,12 @@ Current model: Qwen27B-vision-120K (provider: Q27)
 ```
 
 - `before_agent_start` 拿到的永远是基线系统提示词，因此逐轮追加结果字节级一致，不漂移、不影响 prompt 缓存前缀；换模型时该行随之变化（换模型本就换了缓存命名空间，无损失）。
+
+### timing/（第三方本地修改版）
+
+基于 [pi-timing](https://github.com/adamcjm/pi-timing) v1.3.0（作者 adamcjm，MIT License）：在输入框上方显示每次生成的耗时（含思考估算）、工具耗时、累计活跃时间，并逐回复标注耗时行。详见 [`extensions/timing/README.md`](extensions/timing/README.md)。
+
+本仓库收录仅为个人多机同步，不是 fork；与上游的唯一差异是 widget 行首移除「会话跨度」显示。感谢上游作者。
 
 ### kimi style 主题
 
