@@ -1,0 +1,4 @@
+# 统一使用 LF，避免 Windows checkout 时 CRLF/LF 混乱
+* text=auto eol=lf
+*.png binary
+*.gif binary
