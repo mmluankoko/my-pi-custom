@@ -2,12 +2,11 @@
 
 为 [pi coding agent](https://github.com/earendil-works/pi)（`@earendil-works/pi-coding-agent`）编写的个人扩展与主题合集。
 
-包含 **3 个扩展**（2 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
+包含 **2 个扩展**（1 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
 
 | 文件 | 类型 | 简介 |
 |---|---|---|
 | [`extensions/compact-tool-status.ts`](extensions/compact-tool-status.ts) | 扩展（原创） | 内置工具单行紧凑渲染 + 思考块自动折叠 + 用户消息加粗 |
-| [`extensions/model-in-system-prompt.ts`](extensions/model-in-system-prompt.ts) | 扩展（原创） | 在系统提示词末尾注入当前模型信息 |
 | [`extensions/timing/`](extensions/timing/README.md) | 扩展（第三方修改版） | 基于 [pi-timing](https://github.com/adamcjm/pi-timing) v1.3.0（MIT）本地修改：隐藏会话跨度显示 |
 | [`themes/kimi style.json`](themes/kimi%20style.json) | 主题（原创） | Kimi 风格深色主题（暖黄用户消息、蓝色强调） |
 
@@ -16,8 +15,8 @@
 把文件复制到 pi 的全局目录（或项目级 `.pi/` 目录）：
 
 ```bash
-# 扩展（原创两个单文件 + timing 目录）
-cp extensions/*.ts ~/.pi/agent/extensions/
+# 扩展（原创单文件 + timing 目录）
+cp extensions/compact-tool-status.ts ~/.pi/agent/extensions/
 cp -r extensions/timing ~/.pi/agent/extensions/
 
 # 主题
@@ -30,7 +29,7 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 { "theme": "kimi style" }
 ```
 
-重启 pi（或 `/reload`）即可生效。`model-in-system-prompt.ts` 无需配置；`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
+重启 pi（或 `/reload`）即可生效。`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
 
 临时试用单个扩展：`pi -e ./extensions/compact-tool-status.ts`
 
@@ -51,16 +50,6 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 - 内置工具定义（description / parameters / execute / 系统提示片段）原样展开保留，仅追加渲染函数。
 - session_start 时会把本扩展注册的同名非默认工具（grep / find / ls / powershell）从激活列表移除，恢复 pi 默认工具集；尊重 `settings.json` 的 `defaultTools` 配置，使用 `--tools/-t` CLI 参数时自动跳过。
 - MCP 等第三方扩展工具无法通过公开 API 覆盖渲染，保持默认样式。
-
-### model-in-system-prompt.ts
-
-每次 agent 运行前，在系统提示词末尾追加一行：
-
-```
-Current model: Qwen27B-vision-120K (provider: Q27)
-```
-
-- `before_agent_start` 拿到的永远是基线系统提示词，因此逐轮追加结果字节级一致，不漂移、不影响 prompt 缓存前缀；换模型时该行随之变化（换模型本就换了缓存命名空间，无损失）。
 
 ### timing/（第三方本地修改版）
 
