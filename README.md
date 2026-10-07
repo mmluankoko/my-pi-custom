@@ -2,11 +2,12 @@
 
 为 [pi coding agent](https://github.com/earendil-works/pi)（`@earendil-works/pi-coding-agent`）编写的个人扩展与主题合集。
 
-包含 **2 个扩展**（1 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
+包含 **3 个扩展**（2 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
 
 | 文件 | 类型 | 简介 |
 |---|---|---|
 | [`extensions/compact-tool-status.ts`](extensions/compact-tool-status.ts) | 扩展（原创） | 内置工具单行紧凑渲染 + 思考块自动折叠 + 用户消息加粗 |
+| [`extensions/binary-context-footer.ts`](extensions/binary-context-footer.ts) | 扩展（原创） | footer 的 token 数值改为二进制单位（Ki/Mi，1024 进位） |
 | [`extensions/timing/`](extensions/timing/README.md) | 扩展（第三方修改版） | 基于 [pi-timing](https://github.com/adamcjm/pi-timing) v1.3.0（MIT）本地修改：隐藏会话跨度显示 |
 | [`themes/kimi style.json`](themes/kimi%20style.json) | 主题（原创） | Kimi 风格深色主题（暖黄用户消息、蓝色强调） |
 
@@ -15,8 +16,8 @@
 把文件复制到 pi 的全局目录（或项目级 `.pi/` 目录）：
 
 ```bash
-# 扩展（原创单文件 + timing 目录）
-cp extensions/compact-tool-status.ts ~/.pi/agent/extensions/
+# 扩展（原创两个单文件 + timing 目录）
+cp extensions/*.ts ~/.pi/agent/extensions/
 cp -r extensions/timing ~/.pi/agent/extensions/
 
 # 主题
@@ -29,7 +30,7 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 { "theme": "kimi style" }
 ```
 
-重启 pi（或 `/reload`）即可生效。`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
+重启 pi（或 `/reload`）即可生效。`binary-context-footer.ts` 加载即生效，`/context-units` 可切回内置十进制 footer；`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
 
 临时试用单个扩展：`pi -e ./extensions/compact-tool-status.ts`
 
@@ -50,6 +51,15 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 - 内置工具定义（description / parameters / execute / 系统提示片段）原样展开保留，仅追加渲染函数。
 - session_start 时会把本扩展注册的同名非默认工具（grep / find / ls / powershell）从激活列表移除，恢复 pi 默认工具集；尊重 `settings.json` 的 `defaultTools` 配置，使用 `--tools/-t` CLI 参数时自动跳过。
 - MCP 等第三方扩展工具无法通过公开 API 覆盖渲染，保持默认样式。
+
+### binary-context-footer.ts
+
+用 `ctx.ui.setFooter()` 替换内置 footer，布局 / 配色与内置一致，但所有 token 数值改为 1024 进位（Ki / Mi）：
+
+- `↑` 输入、`↓` 输出、`R` cache read、`W` cache write、`CH` 缓存命中率、上下文 `xx%/NKi (auto)`，全部二进制。
+- 例：内置显示 `16k`，本扩展显示 `16Ki`（= 16384）。
+- `/context-units` 在二进制 footer 与内置十进制 footer 间切换。
+- 已知差异（扩展拿不到的数据）：虚拟模型路由显示（`→ 物理模型`）不显示；Kimi 订阅标记按 provider 近似判断；实验特性 `xp` 指示不显示。
 
 ### timing/（第三方本地修改版）
 
