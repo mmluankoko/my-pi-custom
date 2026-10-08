@@ -2,12 +2,13 @@
 
 为 [pi coding agent](https://github.com/earendil-works/pi)（`@earendil-works/pi-coding-agent`）编写的个人扩展与主题合集。
 
-包含 **3 个扩展**（2 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
+包含 **4 个扩展**（3 个原创 + 1 个第三方本地修改版）和 **1 个主题**：
 
 | 文件 | 类型 | 简介 |
 |---|---|---|
 | [`extensions/compact-tool-status.ts`](extensions/compact-tool-status.ts) | 扩展（原创） | 内置工具单行紧凑渲染 + 思考块自动折叠 + 用户消息加粗 |
 | [`extensions/binary-context-footer.ts`](extensions/binary-context-footer.ts) | 扩展（原创） | footer 的 token 数值改为二进制单位（Ki/Mi，1024 进位） |
+| [`extensions/hostname-title.ts`](extensions/hostname-title.ts) | 扩展（原创） | 终端窗口标题追加 `@机器名`，便于区分 SSH 多机会话 |
 | [`extensions/timing/`](extensions/timing/README.md) | 扩展（第三方修改版） | 基于 [pi-timing](https://github.com/adamcjm/pi-timing) v1.3.0（MIT）本地修改：隐藏会话跨度显示 |
 | [`themes/kimi style.json`](themes/kimi%20style.json) | 主题（原创） | Kimi 风格深色主题（暖黄用户消息、蓝色强调） |
 
@@ -16,7 +17,7 @@
 把文件复制到 pi 的全局目录（或项目级 `.pi/` 目录）：
 
 ```bash
-# 扩展（原创两个单文件 + timing 目录）
+# 扩展（原创三个单文件 + timing 目录）
 cp extensions/*.ts ~/.pi/agent/extensions/
 cp -r extensions/timing ~/.pi/agent/extensions/
 
@@ -30,7 +31,7 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 { "theme": "kimi style" }
 ```
 
-重启 pi（或 `/reload`）即可生效。`binary-context-footer.ts` 加载即生效，`/context-units` 可切回内置十进制 footer；`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
+重启 pi（或 `/reload`）即可生效。`binary-context-footer.ts` 加载即生效，`/ctx-units` 可切回内置十进制 footer；`compact-tool-status.ts` 单独使用也可（工具行样式全部生效，用户文字只是不加粗不变色）。
 
 临时试用单个扩展：`pi -e ./extensions/compact-tool-status.ts`
 
@@ -58,8 +59,16 @@ cp "themes/kimi style.json" ~/.pi/agent/themes/
 
 - `↑` 输入、`↓` 输出、`R` cache read、`W` cache write、`CH` 缓存命中率、上下文 `xx%/NKi (auto)`，全部二进制。
 - 例：内置显示 `16k`，本扩展显示 `16Ki`（= 16384）。
-- `/context-units` 在二进制 footer 与内置十进制 footer 间切换。
+- `/ctx-units` 在二进制 footer 与内置十进制 footer 间切换。
 - 已知差异（扩展拿不到的数据）：虚拟模型路由显示（`→ 物理模型`）不显示；Kimi 订阅标记按 provider 近似判断；实验特性 `xp` 指示不显示。
+
+### hostname-title.ts
+
+在 pi 默认终端窗口标题（`π - 会话名 - 目录名`）末尾追加 `@机器名`：
+
+- 用 `os.hostname()` 取 pi 所在机器的主机名，SSH 场景下本地 / 远程机器的会话一眼可区分。
+- pi 会在启动、新建/切换会话、会话改名时重设标题，扩展挂了相同的事件（`session_start` / `session_info_changed` / `session_tree`）并延迟 50ms 补设一次，确保不被覆盖。
+- 仅 TUI 模式生效（RPC / print 模式无终端标题，自动跳过）。
 
 ### timing/（第三方本地修改版）
 
