@@ -2,7 +2,7 @@
  * binary-context-footer.ts — 把 footer 里的 token 数值从 10 进制（1000 进位，k/M）
  * 改成 2 进制（1024 进位，Ki/Mi），其余布局、配色尽量与内置 footer 保持一致。
  *
- * 加载即生效（session_start 时挂载）；`/context-units` 可在二进制 footer 与
+ * 加载即生效（session_start 时挂载）；`/ctx-units` 可在二进制 footer 与
  * 内置默认 footer 之间切换。
  *
  * 与内置 footer 的已知差异（扩展拿不到的数据）：
@@ -62,9 +62,9 @@ function addUsage(totals: UsageTotals, usage: any): void {
 }
 
 export default function (pi: ExtensionAPI) {
-	let enabled = true; // 加载即启用；/context-units 切换
+	let enabled = true; // 加载即启用；/ctx-units 切换
 
-	pi.registerCommand("context-units", {
+	pi.registerCommand("ctx-units", {
 		description: "切换 footer 上下文单位（Ki 二进制 / 内置十进制）",
 		getArgumentCompletions: () => [],
 		handler: async (_args, ctx) => {
