@@ -137,16 +137,14 @@ export default function (pi: ExtensionAPI) {
 						statsParts.push(`$${totals.cost.toFixed(3)}${usingSubscription ? " (sub)" : ""}`);
 					}
 
-					// 上下文占用：percent + 窗口大小（二进制单位）
+					// 上下文占用：已用/窗口 (百分比) [auto]（二进制单位）
 					const usage = ctx.getContextUsage();
 					const contextWindow = usage?.contextWindow ?? ctx.model?.contextWindow ?? 0;
 					const percentValue = usage?.percent ?? 0;
-					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " (auto)" : "";
-					const percentStr = usage?.percent == null ? "?" : percentValue.toFixed(1);
-					const display =
-						percentStr === "?"
-							? `?/${formatTokens(contextWindow)}${autoIndicator}`
-							: `${percentStr}%/${formatTokens(contextWindow)}${autoIndicator}`;
+					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " [auto]" : "";
+					const tokensStr = usage?.tokens == null ? "?" : formatTokens(usage.tokens);
+					const percentStr = usage?.percent == null ? "?" : `${percentValue.toFixed(1)}%`;
+					const display = `${tokensStr}/${formatTokens(contextWindow)} (${percentStr})${autoIndicator}`;
 					const contextColored =
 						percentValue > 90
 							? theme.fg("error", display)
