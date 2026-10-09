@@ -141,7 +141,7 @@ export default function (pi: ExtensionAPI) {
 					const usage = ctx.getContextUsage();
 					const contextWindow = usage?.contextWindow ?? ctx.model?.contextWindow ?? 0;
 					const percentValue = usage?.percent ?? 0;
-					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " [auto]" : "";
+					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " [a]" : "";
 					const tokensStr = usage?.tokens == null ? "?" : formatTokens(usage.tokens);
 					const percentStr = usage?.percent == null ? "?" : `${percentValue.toFixed(1)}%`;
 					const display = `${tokensStr}/${formatTokens(contextWindow)} (${percentStr})${autoIndicator}`;
