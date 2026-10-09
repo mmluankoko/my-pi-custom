@@ -5,11 +5,17 @@
  * 加载即生效（session_start 时挂载）；`/ctx-units` 可在二进制 footer 与
  * 内置默认 footer 之间切换。
  *
+ * 与内置 footer 的额外差异（本扩展的自定义显示）：
+ * - 第一行工作目录前加 `计算机名:` 前缀；
+ * - 上下文占用显示为 `已用/窗口 (百分比) [A.Cmpt]`（[A.Cmpt] = 自动压缩开启）。
+ *
  * 与内置 footer 的已知差异（扩展拿不到的数据）：
  * - 虚拟模型路由显示（`→ 物理模型`）无法获取，不显示；
  * - Kimi Coding 订阅按 provider === "kimi-coding" 近似判断；
  * - 实验特性 "xp" 指示不显示。
  */
+
+import { hostname } from "node:os";
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
@@ -93,8 +99,8 @@ export default function (pi: ExtensionAPI) {
 				render(width: number): string[] {
 					const lines: string[] = [];
 
-					// ---- 第一行：pwd (+ git 分支 + 会话名) ----
-					let pwd = formatCwdForFooter(ctx.sessionManager.getCwd(), process.env.HOME || process.env.USERPROFILE);
+					// ---- 第一行：计算机名: pwd (+ git 分支 + 会话名) ----
+					let pwd = `${hostname().toUpperCase()}: ${formatCwdForFooter(ctx.sessionManager.getCwd(), process.env.HOME || process.env.USERPROFILE)}`;
 					const branch = footerData.getGitBranch();
 					if (branch) pwd = `${pwd} (${branch})`;
 					const sessionName = ctx.sessionManager.getSessionName();
@@ -141,7 +147,7 @@ export default function (pi: ExtensionAPI) {
 					const usage = ctx.getContextUsage();
 					const contextWindow = usage?.contextWindow ?? ctx.model?.contextWindow ?? 0;
 					const percentValue = usage?.percent ?? 0;
-					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " [a]" : "";
+					const autoIndicator = (pi.getSettings().compaction?.enabled ?? true) ? " [A.Cmpt]" : "";
 					const tokensStr = usage?.tokens == null ? "?" : formatTokens(usage.tokens);
 					const percentStr = usage?.percent == null ? "?" : `${percentValue.toFixed(1)}%`;
 					const display = `${tokensStr}/${formatTokens(contextWindow)} (${percentStr})${autoIndicator}`;
